@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next.js Authentication App with Headless CMS
+
+This project is a Next.js application that demonstrates user authentication and integration with a headless CMS (Strapi).
+
+## Features
+
+-   User authentication (Sign up, Login, Logout) using NextAuth.js.
+-   Headless CMS using Strapi for content management.
+-   Dashboard page that displays the logged-in user's email.
+-   Protected routes (Dashboard redirects to home if not logged in).
+
+## Tech Stack
+
+-   **Frontend:** Next.js
+-   **Authentication:** NextAuth.js
+-   **CMS:** Strapi
+-   **Styling:** Tailwind CSS
+
+## Project Structure
+The project consists of two main parts: the Next.js frontend application (`nextjs-app`) and the Strapi CMS backend (`nextjs-app/cms`).
+
+### Frontend (`nextjs-app`)
+- `app/`: Contains the main application logic, including pages and API routes.
+  - `page.tsx`: The home page with login/signup form.
+  - `dashboard/page.tsx`: The dashboard page, accessible after login.
+  - `api/auth/[...nextauth]/route.ts`: Handles authentication requests.
+- `components/`: Reusable UI components.
+  - `AuthButton.tsx`: Component for login/logout button.
+  - `AuthForm.tsx`: Component for the login/signup form.
+- `providers.tsx`: Provides NextAuth session context to the app.
+
+### Backend (Strapi CMS - `nextjs-app/cms`)
+- Standard Strapi project structure.
+- Configured to run as a separate service.
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+-   Node.js (v18 or later) and npm installed.
+- This project uses environment variables for configuration. Create `.env` files in both the `nextjs-app` and `nextjs-app/cms` directories. Refer to the `.env.example` files for the required variables. You will need to set up a database and configure the CMS accordingly.
+
+### 1. Set up the CMS (Strapi)
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cd nextjs-app/cms
+npm install
+npm run develop
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+-   This will start the Strapi development server. Follow the Strapi instructions to create an admin user and set up your content types.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 2. Set up the Next.js App
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+cd ../../nextjs-app # Navigate back to the root of the nextjs-app
+npm install
+npm run dev
+```
 
-## Learn More
+-   This will start the Next.js development server. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-To learn more about Next.js, take a look at the following resources:
+### Environment Variables
+Make sure to populate the `.env` files in both `nextjs-app` and `nextjs-app/cms` with the appropriate values. The `.env.example` files provide guidance on the required variables.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Implementation Details
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+-   **Authentication:** NextAuth.js is used for authentication. It's configured in `nextjs-app/app/api/auth/[...nextauth]/route.ts`.  The `AuthButton` and `AuthForm` components handle user interaction.
+-   **CMS Integration:**  The Next.js app is designed to interact with the Strapi CMS.  Currently, the CMS is set up but not actively used in the frontend.
+- **Dashboard:** The dashboard page (`app/dashboard/page.tsx`) retrieves the user session using `getServerSession`. If no session is found, it redirects to the home page. If a session exists, it displays the user's email.
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deployment
+The application can be deployed to Vercel. The CMS can be deployed to a hosting provider that supports Node.js applications (e.g., Heroku, DigitalOcean). You will need to configure the environment variables on your hosting platforms.
