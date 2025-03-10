@@ -49,20 +49,22 @@ export default function AuthForm() {
           router.push("/dashboard");
         }
       }
-    } catch (error: any) {
-      console.error("Auth error:", error);
-      
-      if (error.response?.data?.error?.message) {
-        setMessage(error.response.data.error.message);
-      } else if (error.message) {
-        setMessage(error.message);
-      } else {
-        setMessage(isSignUp ? "Registration failed" : "Sign in failed");
-      }
-    } finally {
-      setIsLoading(false);
+    } catch (error: unknown) {
+  console.error("Auth error:", error);
+  
+  if (typeof error === 'object' && error && 'response' in error) {
+    const axiosError = error as { response?: { data?: { error?: { message?: string } } } };
+    if (axiosError.response?.data?.error?.message) {
+      setMessage(axiosError.response.data.error.message);
+    } else {
+      setMessage(isSignUp ? "Registration failed" : "Sign in failed");
     }
-  };
+  } else if (error instanceof Error) {
+    setMessage(error.message);
+  } else {
+    setMessage(isSignUp ? "Registration failed" : "Sign in failed");
+  }
+}
 
   return (
     <div style={{ 
