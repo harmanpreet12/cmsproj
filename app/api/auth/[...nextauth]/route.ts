@@ -14,7 +14,8 @@ type StrapiErrorResponse = {
   };
 };
 
-export const authOptions: NextAuthOptions = {
+// Define auth options outside the export
+const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -82,5 +83,8 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
 };
 
+// Create the handler using the authOptions
 const handler = NextAuth(authOptions);
+
+// Export the handler as GET and POST - these are the only valid exports for route handlers
 export { handler as GET, handler as POST };
