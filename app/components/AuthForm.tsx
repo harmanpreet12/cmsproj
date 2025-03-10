@@ -50,21 +50,24 @@ export default function AuthForm() {
         }
       }
     } catch (error: unknown) {
-  console.error("Auth error:", error);
-  
-  if (typeof error === 'object' && error && 'response' in error) {
-    const axiosError = error as { response?: { data?: { error?: { message?: string } } } };
-    if (axiosError.response?.data?.error?.message) {
-      setMessage(axiosError.response.data.error.message);
-    } else {
-      setMessage(isSignUp ? "Registration failed" : "Sign in failed");
+      console.error("Auth error:", error);
+      
+      if (typeof error === 'object' && error && 'response' in error) {
+        const axiosError = error as { response?: { data?: { error?: { message?: string } } } };
+        if (axiosError.response?.data?.error?.message) {
+          setMessage(axiosError.response.data.error.message);
+        } else {
+          setMessage(isSignUp ? "Registration failed" : "Sign in failed");
+        }
+      } else if (error instanceof Error) {
+        setMessage(error.message);
+      } else {
+        setMessage(isSignUp ? "Registration failed" : "Sign in failed");
+      }
+    } finally {
+      setIsLoading(false);
     }
-  } else if (error instanceof Error) {
-    setMessage(error.message);
-  } else {
-    setMessage(isSignUp ? "Registration failed" : "Sign in failed");
-  }
-}
+  };
 
   return (
     <div style={{ 
