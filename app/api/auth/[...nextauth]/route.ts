@@ -30,10 +30,14 @@ export const authOptions: NextAuthOptions = {
             };
           }
           throw new Error("Invalid credentials");
-        } catch (error: any) {
-          const errorMsg = error.response?.data?.error?.message || "Authentication failed";
-          throw new Error(errorMsg);
-        }
+        } catch (error: unknown) {
+  const errorMsg = error instanceof Error 
+    ? error.message 
+    : typeof error === 'object' && error && 'response' in error 
+      ? (error.response as any)?.data?.error?.message || "Authentication failed"
+      : "Authentication failed";
+  throw new Error(errorMsg);
+}
       },
     }),
   ],
