@@ -3,6 +3,17 @@ import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import axios from "axios";
 
+// Define a type for the Axios error response
+type StrapiErrorResponse = {
+  response?: {
+    data?: {
+      error?: {
+        message?: string;
+      };
+    };
+  };
+};
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -20,7 +31,6 @@ export const authOptions: NextAuthOptions = {
               password: credentials?.password,
             }
           );
-
           if (res.data && res.data.jwt) {
             return {
               id: res.data.user.id,
@@ -31,13 +41,19 @@ export const authOptions: NextAuthOptions = {
           }
           throw new Error("Invalid credentials");
         } catch (error: unknown) {
-  const errorMsg = error instanceof Error 
-    ? error.message 
-    : typeof error === 'object' && error && 'response' in error 
-      ? (error.response as any)?.data?.error?.message || "Authentication failed"
-      : "Authentication failed";
-  throw new Error(errorMsg);
-}
+          let errorMsg = "Authentication failed";
+          
+          if (typeof error === 'object' && error !== null && 'response' in error) {
+            const strapiError = error as StrapiErrorResponse;
+            if (strapiError.response?.data?.error?.message) {
+              errorMsg = strapiError.response.data.error.message;
+            }
+          } else if (error instanceof Error) {
+            errorMsg = error.message;
+          }
+          
+          throw new Error(errorMsg);
+        }
       },
     }),
   ],
